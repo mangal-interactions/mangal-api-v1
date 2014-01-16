@@ -70,9 +70,11 @@ class EnvironmentResource(ModelResource):
 
 class TaxaResource(ModelResource):
     owner = fields.ForeignKey(UserResource, 'owner', full=True, help_text = "URI of the taxa owner. When submitting from the R package, this field is populated automatically.")
+    traits = fields.ManyToManyField(TraitResource, 'traits', full=True, blank = True, null = True, help_text = "A list of traits values indentifiers (or URIs) that were measured on this taxa. Good for taxa-level traits.")
     def dehydrate(self, bundle):
         bundle.data['id'] = str(bundle.data['id'])
         bundle.data['owner'] = str(bundle.data['owner'].data['username'])
+        bundle.data['traits'] = [str(tr.data['id']) for tr in bundle.data['traits']]
         return bundle
     class Meta:
         queryset = Taxa.objects.all()
