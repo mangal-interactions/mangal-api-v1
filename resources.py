@@ -149,6 +149,7 @@ class ItemResource(ModelResource):
 
 class InteractionResource(ModelResource):
     owner = fields.ForeignKey(UserResource, 'owner', full=True, help_text = "Who uploaded the data. URI of the data owner.")
+    environment = fields.ManyToManyField(EnvironmentResource, 'environment', full=True, help_text = "List of identifiers (or URIs) of the environments associated to the interaction.")
     taxa_from = fields.ForeignKey(TaxaResource, 'taxa_from', full=True, help_text = "Identifier (or URI) of the taxa establishing the interaction.")
     taxa_to = fields.ForeignKey(TaxaResource, 'taxa_to', full=True, help_text = "Identifier (or URI) of the taxa receiving the interaction.")
     pop_from = fields.ForeignKey(PopulationResource, 'pop_from', full=True, null = True, help_text = "Identifier (or URI) of the pop. establishing the interaction.")
@@ -167,6 +168,7 @@ class InteractionResource(ModelResource):
         bundle.data['id'] = str(bundle.data['id'])
         bundle.data['owner'] = str(bundle.data['owner'].data['username'])
         bundle.data['taxa_from'] = str(bundle.data['taxa_from'].obj.id)
+        bundle.data['environment'] = [str(env.data['id']) for env in bundle.data['environment']]
         bundle.data['taxa_to'] = str(bundle.data['taxa_to'].obj.id)
         if bundle.data['pop_from']:
             bundle.data['pop_from'] = str(bundle.data['pop_from'].obj.id)
@@ -204,6 +206,7 @@ class NetworkResource(ModelResource):
     def dehydrate(self, bundle):
         bundle.data['id'] = str(bundle.data['id'])
         bundle.data['interactions'] = [str(inte.data['id']) for inte in bundle.data['interactions']]
+        bundle.data['environment'] = [str(env.data['id']) for env in bundle.data['environment']]
         bundle.data['owner'] = str(bundle.data['owner'].data['username'])
         return bundle
     class Meta:
@@ -226,12 +229,14 @@ class NetworkResource(ModelResource):
 
 class DatasetResource(ModelResource):
     networks = fields.ManyToManyField(NetworkResource, 'networks', full=True, help_text = "List of identifiers (or URIs) of the networks in the dataset.")
+    environment = fields.ManyToManyField(EnvironmentResource, 'environment', full=True, help_text = "List of identifiers (or URIs) of the environments associated to the dataset.")
     data = fields.ManyToManyField(RefResource, 'data', full=True, null=True, blank=True, help_text = "List of identifiers (or URIs) of the references describing the data.")
     papers = fields.ManyToManyField(RefResource, 'papers', full=True, null=True, blank=True, help_text = "List of identifiers (or URIs) of the references to the papers associated with the dataset.")
     owner = fields.ForeignKey(UserResource, 'owner', full=True)
     def dehydrate(self, bundle):
         bundle.data['id'] = str(bundle.data['id'])
         bundle.data['networks'] = [str(net.data['id']) for net in bundle.data['networks']]
+        bundle.data['environment'] = [str(env.data['id']) for env in bundle.data['environment']]
         bundle.data['papers'] = [str(ref.data['id']) for ref in bundle.data['papers']]
         bundle.data['data'] = [str(ref.data['id']) for ref in bundle.data['data']]
         bundle.data['owner'] = str(bundle.data['owner'].data['username'])

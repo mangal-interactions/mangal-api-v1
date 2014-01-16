@@ -2,6 +2,8 @@
 
 This repository contains the files necessary to add tha `mangal` API to your `django` project. Up-to-date versions of `django` and `django-tastypie` are required.
 
+In the `urls.py` file of your application, add:
+
 ```python
 from tastypie.api import Api
 from api.resources import *
