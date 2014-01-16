@@ -76,6 +76,14 @@ class TaxaResource(ModelResource):
         bundle.data['owner'] = str(bundle.data['owner'].data['username'])
         bundle.data['traits'] = [str(tr.data['id']) for tr in bundle.data['traits']]
         return bundle
+    def build_schema(self):
+        base_schema = super(TaxaResource, self).build_schema()
+        for f in self._meta.object_class._meta.fields:
+            if f.name in base_schema['fields'] and f.choices:
+                base_schema['fields'][f.name].update({
+                    'choices': [cho[0] for cho in f.choices],
+                    })
+        return base_schema
     class Meta:
         queryset = Taxa.objects.all()
         authorization = Authorization()
@@ -91,6 +99,7 @@ class TaxaResource(ModelResource):
                 'ncbi': ALL,
                 'bold': ALL,
                 'owner': ALL_WITH_RELATIONS,
+                'filter': ALL_WITH_RELATIONS,
                 }
         allowed_methods = ['get','post','patch']
 
