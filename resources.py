@@ -160,7 +160,7 @@ class ItemResource(ModelResource):
 
 class InteractionResource(ModelResource):
     owner = fields.ForeignKey(UserResource, 'owner', full=True, help_text = "Who uploaded the data. URI of the data owner.")
-    environment = fields.ManyToManyField(EnvironmentResource, 'environment', full=True, help_text = "List of identifiers (or URIs) of the environments associated to the interaction.")
+    environment = fields.ManyToManyField(EnvironmentResource, 'environment', full=True, help_text = "List of identifiers (or URIs) of the environments associated to the interaction.", null=True, blank=True)
     taxa_from = fields.ForeignKey(TaxaResource, 'taxa_from', full=True, help_text = "Identifier (or URI) of the taxa establishing the interaction.")
     taxa_to = fields.ForeignKey(TaxaResource, 'taxa_to', full=True, help_text = "Identifier (or URI) of the taxa receiving the interaction.")
     pop_from = fields.ForeignKey(PopulationResource, 'pop_from', full=True, null = True, help_text = "Identifier (or URI) of the pop. establishing the interaction.")
@@ -240,7 +240,7 @@ class NetworkResource(ModelResource):
 
 class DatasetResource(ModelResource):
     networks = fields.ManyToManyField(NetworkResource, 'networks', full=True, help_text = "List of identifiers (or URIs) of the networks in the dataset.")
-    environment = fields.ManyToManyField(EnvironmentResource, 'environment', full=True, help_text = "List of identifiers (or URIs) of the environments associated to the dataset.")
+    environment = fields.ManyToManyField(EnvironmentResource, 'environment', full=True, help_text = "List of identifiers (or URIs) of the environments associated to the dataset.", null=True, blank=True)
     data = fields.ManyToManyField(RefResource, 'data', full=True, null=True, blank=True, help_text = "List of identifiers (or URIs) of the references describing the data.")
     papers = fields.ManyToManyField(RefResource, 'papers', full=True, null=True, blank=True, help_text = "List of identifiers (or URIs) of the references to the papers associated with the dataset.")
     owner = fields.ForeignKey(UserResource, 'owner', full=True)
