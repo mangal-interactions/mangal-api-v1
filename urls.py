@@ -20,8 +20,4 @@ v1_api.register(EnvironmentResource())
 v1_api.register(ItemResource())
 
 urlpatterns = patterns('',
-    # Examples:
-    #url(r'^$', 'base.views.index', name='index'),
-#    url(r'^api/', include('api.urls', namespace='api')),
-    #url(r'^api/', include(v1_api.urls)),
 )
