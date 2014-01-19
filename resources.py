@@ -203,7 +203,8 @@ class InteractionResource(ModelResource):
                 'pop_from': ALL_WITH_RELATIONS,
                 'item_to': ALL_WITH_RELATIONS,
                 'item_from': ALL_WITH_RELATIONS,
-                'ecotype': ALL_WITH_RELATIONS,
+                'link_type': ALL_WITH_RELATIONS,
+                'obs_type': ALL_WITH_RELATIONS,
                 'nature': ALL_WITH_RELATIONS,
                 'description': ALL,
                 }
