@@ -52,7 +52,7 @@ class Taxa(models.Model):
    status = models.CharField(max_length=50, choices = TAXO_CHOICE, default = 'confirmed', help_text = "The taxonomic status of the taxa.")
    def __unicode__(self):
        na = self.name
-       if len(self.vernacular) > 0:
+       if self.vernacular > 0:
            na += " ("+self.vernacular+")"
        return na
 
@@ -92,6 +92,7 @@ class Item(models.Model):
 class Interaction(models.Model):
    TYPE_CHOICES = (
            ('predation', 'Predation'),
+           ('herbivory', 'Herbivory'),
            ('ectoparasitism', 'Ectoparasitism'),
            ('endoparasitism', 'Endoparasitism'),
            ('intra-cellular parasitism', 'Intra-Cellular parasitism'),
