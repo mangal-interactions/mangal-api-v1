@@ -5,7 +5,63 @@ from tastypie.authentication import Authentication
 from models import *
 from django.contrib.auth.models import User
 from django.db import IntegrityError
-from tastypie.exceptions import BadRequest
+from tastypie.exceptions import BadRequest, Unauthorized
+from django.db.models import Q
+
+
+class MangalAuthorization(Authorization):
+
+    def is_object_readable(self, ob, bundle):
+        """ Is the object readable?
+
+        An object is BY DEFAULT readable if the resource has no public field
+
+        If there is a public field, the resource is only readable by
+        (i)  staff
+        (ii) the owner
+        (iv) the public if public is True
+        """
+        try :
+            ob.public
+        except AttributeError :
+            return True
+        else :
+            if bundle.request.user.is_staff or ob.owner == bundle.request.user or ob.public:
+                return True
+            else :
+                return False
+
+    def read_list(self, object_list, bundle):
+        allowed = [ob for ob in object_list if self.is_object_readable(ob, bundle)]
+        return allowed
+
+    def read_detail(self, object_list, bundle):
+        return self.is_object_readable(bundle.obj, bundle)
+
+    def create_list(self, object_list, bundle):
+        allowed = [ob for ob in object_list if self.is_object_readable(ob, bundle)]
+        return allowed
+
+    def create_detail(self, object_list, bundle):
+        """Create an object
+
+        The only condition is to be authenticated
+        """
+        return bundle.request.user.is_authenticated()
+
+    def update_list(self, object_list, bundle):
+        allowed = [ob for ob in object_list if self.is_object_readable(ob, bundle)]
+        return allowed
+
+    def update_detail(self, object_list, bundle):
+        return self.is_object_readable(bundle.obj, bundle)
+
+    def delete_list(self, object_list, bundle):
+        raise Unauthorized("Deleting objects is not permitted")
+
+    def delete_detail(self, object_list, bundle):
+        raise Unauthorized("Deleting objects is not permitted")
+
 
 class UserResource(ModelResource):
     class Meta:
@@ -34,7 +90,7 @@ class RefResource(ModelResource):
         return bundle
     class Meta:
         queryset = Ref.objects.all()
-        authorization = Authorization()
+        authorization = MangalAuthorization()
         include_resource_uri = False
         always_return_data = True
         resource_name = 'reference'
@@ -48,7 +104,7 @@ class TraitResource(ModelResource):
         return bundle
     class Meta:
         queryset = Trait.objects.all()
-        authorization = Authorization()
+        authorization = MangalAuthorization()
         include_resource_uri = False
         always_return_data = True
         resource_name = 'trait'
@@ -62,7 +118,7 @@ class EnvironmentResource(ModelResource):
         return bundle
     class Meta:
         queryset = Environment.objects.all()
-        authorization = Authorization()
+        authorization = MangalAuthorization()
         include_resource_uri = False
         always_return_data = True
         resource_name = 'environment'
@@ -86,7 +142,7 @@ class TaxaResource(ModelResource):
         return base_schema
     class Meta:
         queryset = Taxa.objects.all()
-        authorization = Authorization()
+        authorization = MangalAuthorization()
         include_resource_uri = False
         always_return_data = True
         resource_name = 'taxa'
@@ -112,7 +168,7 @@ class PopulationResource(ModelResource):
         bundle.data['owner'] = str(bundle.data['owner'].data['username'])
         return bundle
     class Meta:
-        authorization = Authorization()
+        authorization = MangalAuthorization()
         always_return_data = True
         queryset = Population.objects.all()
         include_resource_uri = False
@@ -144,7 +200,7 @@ class ItemResource(ModelResource):
                     })
         return base_schema
     class Meta:
-        authorization = Authorization()
+        authorization = MangalAuthorization()
         always_return_data = True
         queryset = Item.objects.all()
         include_resource_uri = False
@@ -192,7 +248,7 @@ class InteractionResource(ModelResource):
         return bundle
     class Meta:
         queryset = Interaction.objects.all()
-        authorization = Authorization()
+        authorization = MangalAuthorization()
         always_return_data = True
         include_resource_uri = False
         filtering = {
@@ -223,7 +279,7 @@ class NetworkResource(ModelResource):
         return bundle
     class Meta:
         queryset = Network.objects.all()
-        authorization = Authorization()
+        authorization = MangalAuthorization()
         always_return_data = True
         include_resource_uri = False
         resource_name = 'network'
@@ -255,7 +311,7 @@ class DatasetResource(ModelResource):
         return bundle
     class Meta:
         queryset = Dataset.objects.all()
-        authorization = Authorization()
+        authorization = MangalAuthorization()
         always_return_data = True
         include_resource_uri = False
         resource_name = 'dataset'
@@ -267,3 +323,4 @@ class DatasetResource(ModelResource):
                 }
         excludes = ['public']
         allowed_methods = ['get','post','patch']
+
