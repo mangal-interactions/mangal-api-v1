@@ -95,6 +95,7 @@ class RefResource(ModelResource):
         return bundle
     class Meta:
         queryset = Ref.objects.all()
+        authentication = MultiAuthentication(ApiKeyAuthentication(), BasicAuthentication(), Authentication())
         authorization = MangalAuthorization()
         include_resource_uri = False
         always_return_data = True
@@ -109,6 +110,7 @@ class TraitResource(ModelResource):
         return bundle
     class Meta:
         queryset = Trait.objects.all()
+        authentication = MultiAuthentication(ApiKeyAuthentication(), BasicAuthentication(), Authentication())
         authorization = MangalAuthorization()
         include_resource_uri = False
         always_return_data = True
@@ -123,6 +125,7 @@ class EnvironmentResource(ModelResource):
         return bundle
     class Meta:
         queryset = Environment.objects.all()
+        authentication = MultiAuthentication(ApiKeyAuthentication(), BasicAuthentication(), Authentication())
         authorization = MangalAuthorization()
         include_resource_uri = False
         always_return_data = True
