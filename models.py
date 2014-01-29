@@ -1,6 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+# Auto-generation of API keys
+
+from django.contrib.auth.models import User
+from tastypie.models import create_api_key
+
+models.signals.post_save.connect(create_api_key, sender=User)
+
+
 # these models are elements of the mangal data specification
 
 M_NAME = 400
@@ -67,7 +75,6 @@ class Population(models.Model):
 
 # item
 class Item(models.Model):
-   public = models.BooleanField(default=True)
    owner = models.ForeignKey(User, related_name="%(app_label)s_%(class)s_owner", help_text = "The identifier of the uploader")
    population = models.ForeignKey(Population)
    level = models.CharField(max_length=50, choices = (('individual', 'Individual'), ('population', 'Population'),), help_text = "Whether the item is a single individual, or a population")
@@ -120,14 +127,14 @@ class Interaction(models.Model):
            ('absence', 'Confirmed absence'),
            ('inferred', 'Inferred'),
            )
-   public = models.BooleanField(default=True)
+   public = models.BooleanField(default=True, blank=True, help_text="Whether the interaction can be viewed by all users")
    link_type = models.CharField(max_length=50, choices = TYPE_CHOICES, help_text  ="The type of interaction")
    obs_type = models.CharField(max_length=50, choices = OBSERVATION_CHOICES, help_text  ="How the interaction was observed")
    owner = models.ForeignKey(User, related_name="%(app_label)s_%(class)s_owner")
    taxa_from = models.ForeignKey(Taxa, related_name='taxa_from')
    taxa_to = models.ForeignKey(Taxa, related_name='taxa_to')
-   population_from = models.ForeignKey(Population, related_name='pop_from', blank=True, null=True)
-   population_to = models.ForeignKey(Population, related_name='pop_to', blank=True, null=True)
+   pop_from = models.ForeignKey(Population, related_name='pop_from', blank=True, null=True)
+   pop_to = models.ForeignKey(Population, related_name='pop_to', blank=True, null=True)
    item_from = models.ForeignKey(Item, related_name='item_from', blank=True, null=True)
    item_to = models.ForeignKey(Item, related_name='item_to', blank=True, null=True)
    stage_from = models.CharField(max_length=50, choices = STAGE_CHOICES, default = 'all', help_text = "The stage of the establishing, to be selected in the list of allowed values")
@@ -154,7 +161,7 @@ class Interaction(models.Model):
 
 # network
 class Network(models.Model):
-   public = models.BooleanField(default=True)
+   public = models.BooleanField(default=True, blank=True, help_text="Whether the network can be viewed by all users")
    owner = models.ForeignKey(User, related_name="%(app_label)s_%(class)s_owner")
    name = models.CharField(max_length=M_NAME, help_text = "The name of the network")
    description = models.CharField(max_length=D_NAME,blank=True,null=True, help_text = "A short description of the network")
@@ -176,7 +183,7 @@ class Ref(models.Model):
 
 # dataset
 class Dataset(models.Model):
-   public = models.BooleanField(default=True)
+   public = models.BooleanField(default=True, blank=True, help_text="Whether the dataset can be viewed by all users")
    owner = models.ForeignKey(User, related_name="%(app_label)s_%(class)s_owner")
    name = models.CharField(max_length=M_NAME, help_text = "The name of the dataset")
    description = models.CharField(max_length=D_NAME,blank=True,null=True, help_text = "A short description of the dataset")

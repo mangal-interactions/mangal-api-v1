@@ -1,7 +1,7 @@
 from tastypie import fields
 from tastypie.resources import ModelResource, ALL, ALL_WITH_RELATIONS
 from tastypie.authorization import Authorization
-from tastypie.authentication import Authentication
+from tastypie.authentication import BasicAuthentication, ApiKeyAuthentication, MultiAuthentication, Authentication
 from models import *
 from django.contrib.auth.models import User
 from django.db import IntegrityError
@@ -23,7 +23,12 @@ class MangalAuthorization(Authorization):
         """
         try :
             ob.public
+            ob.owner
         except AttributeError :
+            return True
+        except :
+            # I don't know why it is needed, but the schemas are NOT
+            # returned without that...
             return True
         else :
             if bundle.request.user.is_staff or ob.owner == bundle.request.user or ob.public:
@@ -39,8 +44,7 @@ class MangalAuthorization(Authorization):
         return self.is_object_readable(bundle.obj, bundle)
 
     def create_list(self, object_list, bundle):
-        allowed = [ob for ob in object_list if self.is_object_readable(ob, bundle)]
-        return allowed
+        return True
 
     def create_detail(self, object_list, bundle):
         """Create an object
@@ -67,6 +71,7 @@ class UserResource(ModelResource):
     class Meta:
         object_class = User
         queryset = User.objects.all()
+        authentication = MultiAuthentication(ApiKeyAuthentication(), BasicAuthentication(), Authentication())
         authorization = Authorization()
         include_resource_uri = False
         always_return_data = True
@@ -142,6 +147,7 @@ class TaxaResource(ModelResource):
         return base_schema
     class Meta:
         queryset = Taxa.objects.all()
+        authentication = MultiAuthentication(ApiKeyAuthentication(), BasicAuthentication(), Authentication())
         authorization = MangalAuthorization()
         include_resource_uri = False
         always_return_data = True
@@ -168,6 +174,7 @@ class PopulationResource(ModelResource):
         bundle.data['owner'] = str(bundle.data['owner'].data['username'])
         return bundle
     class Meta:
+        authentication = MultiAuthentication(ApiKeyAuthentication(), BasicAuthentication(), Authentication())
         authorization = MangalAuthorization()
         always_return_data = True
         queryset = Population.objects.all()
@@ -200,6 +207,7 @@ class ItemResource(ModelResource):
                     })
         return base_schema
     class Meta:
+        authentication = MultiAuthentication(ApiKeyAuthentication(), BasicAuthentication(), Authentication())
         authorization = MangalAuthorization()
         always_return_data = True
         queryset = Item.objects.all()
@@ -248,6 +256,7 @@ class InteractionResource(ModelResource):
         return bundle
     class Meta:
         queryset = Interaction.objects.all()
+        authentication = MultiAuthentication(ApiKeyAuthentication(), BasicAuthentication(), Authentication())
         authorization = MangalAuthorization()
         always_return_data = True
         include_resource_uri = False
@@ -279,6 +288,7 @@ class NetworkResource(ModelResource):
         return bundle
     class Meta:
         queryset = Network.objects.all()
+        authentication = MultiAuthentication(ApiKeyAuthentication(), BasicAuthentication(), Authentication())
         authorization = MangalAuthorization()
         always_return_data = True
         include_resource_uri = False
@@ -311,6 +321,7 @@ class DatasetResource(ModelResource):
         return bundle
     class Meta:
         queryset = Dataset.objects.all()
+        authentication = MultiAuthentication(ApiKeyAuthentication(), BasicAuthentication(), Authentication())
         authorization = MangalAuthorization()
         always_return_data = True
         include_resource_uri = False
