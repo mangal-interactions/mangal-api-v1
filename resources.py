@@ -293,7 +293,6 @@ class NetworkResource(ModelResource):
         always_return_data = True
         include_resource_uri = False
         resource_name = 'network'
-        excludes = ['public','owner']
         filtering = {
                 'owner': ALL_WITH_RELATIONS,
                 'interactions': ALL_WITH_RELATIONS,
@@ -332,6 +331,5 @@ class DatasetResource(ModelResource):
                 'description': ALL,
                 'name': ALL,
                 }
-        excludes = ['public']
         allowed_methods = ['get','post','patch']
 
