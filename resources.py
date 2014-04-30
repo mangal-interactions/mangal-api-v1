@@ -72,13 +72,13 @@ class UserResource(ModelResource):
         object_class = User
         queryset = User.objects.all()
         authentication = MultiAuthentication(ApiKeyAuthentication(), BasicAuthentication(), Authentication())
-        authorization = Authorization()
+        authorization = MangalAuthorization()
         include_resource_uri = False
         always_return_data = True
         resource_name = 'user'
         excludes = ['date_joined', 'is_active', 'is_staff', 'is_superuser', 'last_login', 'password']
-        filtering = {'username': ALL,}
-        allowed_methods = ['get','patch','post']
+        filtering = {'username': ALL, 'email': ALL, 'last_name': ALL, 'first_name': ALL, }
+        allowed_methods = ['get','patch']
     def obj_create(self, bundle, request=None, **kwargs):
         username, password = bundle.data['username'], bundle.data['password']
         try :
@@ -163,8 +163,8 @@ class TaxaResource(ModelResource):
                 'itis': ALL,
                 'ncbi': ALL,
                 'bold': ALL,
-                'owner': ALL_WITH_RELATIONS,
-                'filter': ALL_WITH_RELATIONS,
+                'owner': ALL,
+                'filter': ALL,
                 }
         allowed_methods = ['get','post','patch']
 
