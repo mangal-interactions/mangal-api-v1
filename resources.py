@@ -71,8 +71,6 @@ class UserResource(ModelResource):
     class Meta:
         object_class = User
         queryset = User.objects.all()
-        authentication = MultiAuthentication(ApiKeyAuthentication(), BasicAuthentication(), Authentication())
-        authorization = MangalAuthorization()
         include_resource_uri = False
         always_return_data = True
         resource_name = 'user'
