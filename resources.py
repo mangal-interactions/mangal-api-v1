@@ -76,7 +76,7 @@ class UserResource(ModelResource):
         resource_name = 'user'
         excludes = ['date_joined', 'is_active', 'is_staff', 'is_superuser', 'last_login', 'password']
         filtering = {'username': ALL, 'email': ALL, 'last_name': ALL, 'first_name': ALL, }
-        allowed_methods = ['get','patch']
+        allowed_methods = ['get']
     def obj_create(self, bundle, request=None, **kwargs):
         username, password = bundle.data['username'], bundle.data['password']
         try :
