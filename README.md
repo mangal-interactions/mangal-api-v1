@@ -1,6 +1,16 @@
 # mangal-api
 
-This repository contains the files necessary to add tha `mangal` API to your `django` project. Up-to-date versions of `django` and `django-tastypie` are required.
+This repository contains the files necessary to add tha `mangal` API to your
+`django` project. Up-to-date versions of `django` and `django-tastypie`
+are required.
+
+## Authorisation classes
+
+The application adds two custom authorization classes: `MangalAuthorization`
+and `UserAuthorization`, respectively to access the objects stored in the
+databases, and to interact with the database users.
+
+## Installation
 
 In the `urls.py` file of your application, add:
 
