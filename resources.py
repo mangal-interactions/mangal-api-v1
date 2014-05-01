@@ -8,7 +8,6 @@ from django.db import IntegrityError
 from tastypie.exceptions import BadRequest, Unauthorized
 from django.db.models import Q
 
-
 class MangalAuthorization(Authorization):
 
     def is_object_readable(self, ob, bundle):
@@ -66,10 +65,36 @@ class MangalAuthorization(Authorization):
     def delete_detail(self, object_list, bundle):
         raise Unauthorized("Deleting objects is not permitted")
 
+class UserAuthorization(Authorization):
+
+    def read_list(self, object_list, bundle):
+        return True
+
+    def read_detail(self, object_list, bundle):
+        return True
+
+    def create_list(self, object_list, bundle):
+        return True
+
+    def create_detail(self, object_list, bundle):
+        raise Unauthorized("Users can be created on the web interface")
+
+    def update_list(self, object_list, bundle):
+        raise Unauthorized("No updating users")
+
+    def update_detail(self, object_list, bundle):
+        raise Unauthorized("No updating users")
+
+    def delete_list(self, object_list, bundle):
+        raise Unauthorized("Deleting users is not permitted")
+
+    def delete_detail(self, object_list, bundle):
+        raise Unauthorized("Deleting users is not permitted")
 
 class UserResource(ModelResource):
     class Meta:
         object_class = User
+        authorization = UserAuthorization()
         queryset = User.objects.all()
         include_resource_uri = False
         always_return_data = True
@@ -84,6 +109,7 @@ class UserResource(ModelResource):
         except IntegrityError:
             raise BadRequest('That username already exists')
         return bundle
+
 
 class RefResource(ModelResource):
     owner = fields.ForeignKey(UserResource, 'owner', full=True, help_text = "URI of the profile of the owner. When objects are uploaded from the R package, this field is set automatically.")
@@ -100,6 +126,7 @@ class RefResource(ModelResource):
         resource_name = 'reference'
         allowed_methods = ['get','post','patch']
 
+
 class TraitResource(ModelResource):
     owner = fields.ForeignKey(UserResource, 'owner', full=True)
     def dehydrate(self, bundle):
@@ -115,6 +142,7 @@ class TraitResource(ModelResource):
         resource_name = 'trait'
         allowed_methods = ['get','post','patch']
 
+
 class EnvironmentResource(ModelResource):
     owner = fields.ForeignKey(UserResource, 'owner', full=True)
     def dehydrate(self, bundle):
@@ -129,6 +157,7 @@ class EnvironmentResource(ModelResource):
         always_return_data = True
         resource_name = 'environment'
         allowed_methods = ['get','post','patch']
+
 
 class TaxaResource(ModelResource):
     owner = fields.ForeignKey(UserResource, 'owner', full=True, help_text = "URI of the taxa owner. When submitting from the R package, this field is populated automatically.")
@@ -166,6 +195,7 @@ class TaxaResource(ModelResource):
                 }
         allowed_methods = ['get','post','patch']
 
+
 class PopulationResource(ModelResource):
     owner = fields.ForeignKey(UserResource, 'owner', full=True)
     taxa = fields.ForeignKey(TaxaResource, 'taxa', full=True, help_text = "The identifier (or URI) of the taxa object to which the population belongs.")
@@ -188,6 +218,7 @@ class PopulationResource(ModelResource):
                 }
         resource_name = 'population'
         allowed_methods = ['get','post','patch']
+
 
 class ItemResource(ModelResource):
     population = fields.ForeignKey(PopulationResource, 'population', full=True, help_text = "The identifier (or URI) of the population object to which the item belongs.")
@@ -222,6 +253,7 @@ class ItemResource(ModelResource):
                 }
         resource_name = 'item'
         allowed_methods = ['get','post','patch']
+
 
 class InteractionResource(ModelResource):
     owner = fields.ForeignKey(UserResource, 'owner', full=True, help_text = "Who uploaded the data. URI of the data owner.")
@@ -277,6 +309,7 @@ class InteractionResource(ModelResource):
         resource_name = 'interaction'
         allowed_methods = ['get','post','patch']
 
+
 class NetworkResource(ModelResource):
     interactions = fields.ManyToManyField(InteractionResource, 'interactions', full=True, help_text = "List of identifiers (or URIs) of the interactions in the network.")
     environment = fields.ManyToManyField(EnvironmentResource, 'environment', full=True, null=True, blank=True, help_text = "List of identifiers (or URIs) of environmental measurements associated to the network.")
@@ -304,6 +337,7 @@ class NetworkResource(ModelResource):
                 'longitude': ALL_WITH_RELATIONS,
                 }
         allowed_methods = ['get','post','patch']
+
 
 class DatasetResource(ModelResource):
     networks = fields.ManyToManyField(NetworkResource, 'networks', full=True, help_text = "List of identifiers (or URIs) of the networks in the dataset.")
