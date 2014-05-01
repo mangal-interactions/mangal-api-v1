@@ -92,6 +92,7 @@ class UserAuthorization(Authorization):
 class UserResource(ModelResource):
     class Meta:
         object_class = User
+        #authentication = MultiAuthentication(ApiKeyAuthentication(), BasicAuthentication(), Authentication())
         authorization = UserAuthorization()
         queryset = User.objects.all()
         include_resource_uri = False
