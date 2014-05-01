@@ -8,7 +8,6 @@ from tastypie.models import create_api_key
 
 models.signals.post_save.connect(create_api_key, sender=User)
 
-
 # these models are elements of the mangal data specification
 
 M_NAME = 400
