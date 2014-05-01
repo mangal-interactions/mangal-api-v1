@@ -36,8 +36,7 @@ class MangalAuthorization(Authorization):
                 return False
 
     def read_list(self, object_list, bundle):
-        allowed = [ob for ob in object_list if self.is_object_readable(ob, bundle)]
-        return allowed
+        return [ob for ob in object_list if self.is_object_readable(ob, bundle)]
 
     def read_detail(self, object_list, bundle):
         return self.is_object_readable(bundle.obj, bundle)
@@ -53,8 +52,7 @@ class MangalAuthorization(Authorization):
         return bundle.request.user.is_authenticated()
 
     def update_list(self, object_list, bundle):
-        allowed = [ob for ob in object_list if self.is_object_readable(ob, bundle)]
-        return allowed
+        return [ob for ob in object_list if self.is_object_readable(ob, bundle)]
 
     def update_detail(self, object_list, bundle):
         return self.is_object_readable(bundle.obj, bundle)
@@ -68,13 +66,13 @@ class MangalAuthorization(Authorization):
 class UserAuthorization(Authorization):
 
     def read_list(self, object_list, bundle):
-        return True
+        return [ob for ob in object_list]
 
     def read_detail(self, object_list, bundle):
         return True
 
     def create_list(self, object_list, bundle):
-        return True
+        raise Unauthorized("No creating a bunch of users (for now)")
 
     def create_detail(self, object_list, bundle):
         raise Unauthorized("Users can be created on the web interface")
