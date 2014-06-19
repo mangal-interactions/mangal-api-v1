@@ -1,6 +1,6 @@
 from tastypie import fields
 from tastypie.resources import ModelResource, ALL, ALL_WITH_RELATIONS
-from tastypie.authorization import Authorization
+from tastypie.authorization import DjangoAuthorization, Authorization
 from tastypie.authentication import BasicAuthentication, ApiKeyAuthentication, MultiAuthentication, Authentication
 from models import *
 from django.contrib.auth.models import User
@@ -63,7 +63,7 @@ class MangalAuthorization(Authorization):
     def delete_detail(self, object_list, bundle):
         raise Unauthorized("Deleting objects is not permitted")
 
-class UserAuthorization(Authorization):
+class UserAuthorization(DjangoAuthorization):
 
     def read_list(self, object_list, bundle):
         return [ob for ob in object_list]
