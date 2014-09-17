@@ -85,6 +85,14 @@ class Item(models.Model):
    def __unicode__(self):
        return u'%s (%s) - belongs to %s' % (self.name, self.level, self.population)
 
+# reference
+class Ref(models.Model):
+   doi = models.CharField(max_length=200, blank=True, null=True, help_text = "DOI of the reference object")
+   owner = models.ForeignKey(User, related_name="%(app_label)s_%(class)s_owner")
+   jstor = models.CharField(max_length=200, blank=True, null=True, help_text = "JSTOR identifier of the reference object")
+   pmid = models.CharField(max_length=200, blank=True, null=True, help_text = "PubMed ID of the reference object")
+   url = models.CharField(max_length=200, blank=True, null=True, help_text = "URL of the reference object")
+
 # interaction
 class Interaction(models.Model):
    STAGE_CHOICES = (
@@ -176,14 +184,6 @@ class Network(models.Model):
    date = models.DateField(blank=True, null=True, help_text="The time at which the network was sampled")
    def __unicode__(self):
        return self.name
-
-# reference
-class Ref(models.Model):
-   doi = models.CharField(max_length=200, blank=True, null=True, help_text = "DOI of the reference object")
-   owner = models.ForeignKey(User, related_name="%(app_label)s_%(class)s_owner")
-   jstor = models.CharField(max_length=200, blank=True, null=True, help_text = "JSTOR identifier of the reference object")
-   pmid = models.CharField(max_length=200, blank=True, null=True, help_text = "PubMed ID of the reference object")
-   url = models.CharField(max_length=200, blank=True, null=True, help_text = "URL of the reference object")
 
 # dataset
 class Dataset(models.Model):
