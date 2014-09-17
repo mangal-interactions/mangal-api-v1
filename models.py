@@ -148,6 +148,7 @@ class Interaction(models.Model):
    environment = models.ManyToManyField(Environment,blank=True,null=True, help_text = "Local environment")
    papers = models.ManyToManyField(Ref, related_name='papers',blank=True,null=True)
    data = models.ManyToManyField(Ref, related_name='data',blank=True,null=True)
+   date = models.DateField(blank=True, null=True, help_text="The time at which the interaction was sampled")
    def __unicode__(self):
        From = self.taxa_from
        To = self.taxa_to
@@ -169,10 +170,10 @@ class Network(models.Model):
    name = models.CharField(max_length=M_NAME, help_text = "The name of the network")
    description = models.CharField(max_length=D_NAME,blank=True,null=True, help_text = "A short description of the network")
    interactions = models.ManyToManyField(Interaction)
-   date = models.CharField(max_length=10,blank=True,null=True, help_text = "The date at which the network was sampled")
    latitude = models.CharField(max_length=20,blank=True,null=True, help_text = "Latitude")
    longitude = models.CharField(max_length=20,blank=True,null=True, help_text = "Longitude")
    environment = models.ManyToManyField(Environment,blank=True,null=True)
+   date = models.DateField(blank=True, null=True, help_text="The time at which the network was sampled")
    def __unicode__(self):
        return self.name
 
