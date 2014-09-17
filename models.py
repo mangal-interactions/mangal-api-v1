@@ -154,8 +154,8 @@ class Interaction(models.Model):
    latitude = models.CharField(max_length=20,blank=True,null=True, help_text = "Latitude")
    longitude = models.CharField(max_length=20,blank=True,null=True, help_text = "Longitude")
    environment = models.ManyToManyField(Environment,blank=True,null=True, help_text = "Local environment")
-   papers = models.ManyToManyField(Ref, related_name='papers',blank=True,null=True)
-   data = models.ManyToManyField(Ref, related_name='data',blank=True,null=True)
+   papers = models.ManyToManyField(Ref, related_name='int_papers',blank=True,null=True)
+   data = models.ManyToManyField(Ref, related_name='int_data',blank=True,null=True)
    date = models.DateField(blank=True, null=True, help_text="The time at which the interaction was sampled")
    def __unicode__(self):
        From = self.taxa_from
