@@ -168,7 +168,7 @@ class Interaction(models.Model):
           From = self.item_from
        if self.item_to:
           To = self.item_to
-       return u'%s of %s by %s'% (self.ecotype, To, From)
+       return u'%s (%s) of %s by %s'% (self.link_type, self.obs_type, To, From)
 
 
 # network
@@ -181,6 +181,8 @@ class Network(models.Model):
    latitude = models.CharField(max_length=20,blank=True,null=True, help_text = "Latitude")
    longitude = models.CharField(max_length=20,blank=True,null=True, help_text = "Longitude")
    environment = models.ManyToManyField(Environment,blank=True,null=True)
+   papers = models.ManyToManyField(Ref, related_name='net_papers',blank=True,null=True)
+   data = models.ManyToManyField(Ref, related_name='net_data',blank=True,null=True)
    date = models.DateField(blank=True, null=True, help_text="The time at which the network was sampled")
    def __unicode__(self):
        return self.name
