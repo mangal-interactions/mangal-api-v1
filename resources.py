@@ -95,7 +95,6 @@ class UserResource(ModelResource):
         #authentication = MultiAuthentication(ApiKeyAuthentication(), BasicAuthentication(), Authentication())
         authorization = UserAuthorization()
         queryset = User.objects.all()
-        include_resource_uri = False
         always_return_data = True
         resource_name = 'user'
         excludes = ['date_joined', 'is_active', 'is_staff', 'is_superuser', 'last_login', 'password']
@@ -120,7 +119,6 @@ class RefResource(ModelResource):
         queryset = Ref.objects.all()
         authentication = MultiAuthentication(ApiKeyAuthentication(), BasicAuthentication(), Authentication())
         authorization = MangalAuthorization()
-        include_resource_uri = False
         always_return_data = True
         resource_name = 'reference'
         allowed_methods = ['get','post','patch']
@@ -136,7 +134,6 @@ class TraitResource(ModelResource):
         queryset = Trait.objects.all()
         authentication = MultiAuthentication(ApiKeyAuthentication(), BasicAuthentication(), Authentication())
         authorization = MangalAuthorization()
-        include_resource_uri = False
         always_return_data = True
         resource_name = 'trait'
         allowed_methods = ['get','post','patch']
@@ -152,7 +149,6 @@ class EnvironmentResource(ModelResource):
         queryset = Environment.objects.all()
         authentication = MultiAuthentication(ApiKeyAuthentication(), BasicAuthentication(), Authentication())
         authorization = MangalAuthorization()
-        include_resource_uri = False
         always_return_data = True
         resource_name = 'environment'
         allowed_methods = ['get','post','patch']
@@ -178,7 +174,6 @@ class TaxaResource(ModelResource):
         queryset = Taxa.objects.all()
         authentication = MultiAuthentication(ApiKeyAuthentication(), BasicAuthentication(), Authentication())
         authorization = MangalAuthorization()
-        include_resource_uri = False
         always_return_data = True
         resource_name = 'taxa'
         filtering = {
@@ -208,7 +203,6 @@ class PopulationResource(ModelResource):
         authorization = MangalAuthorization()
         always_return_data = True
         queryset = Population.objects.all()
-        include_resource_uri = False
         filtering = {
                 'taxa': ALL_WITH_RELATIONS,
                 'name': ALL,
@@ -242,7 +236,6 @@ class ItemResource(ModelResource):
         authorization = MangalAuthorization()
         always_return_data = True
         queryset = Item.objects.all()
-        include_resource_uri = False
         filtering = {
                 'population': ALL_WITH_RELATIONS,
                 'description': ALL,
@@ -291,7 +284,6 @@ class InteractionResource(ModelResource):
         authentication = MultiAuthentication(ApiKeyAuthentication(), BasicAuthentication(), Authentication())
         authorization = MangalAuthorization()
         always_return_data = True
-        include_resource_uri = False
         filtering = {
                 'owner': ALL_WITH_RELATIONS,
                 'taxa_from': ALL_WITH_RELATIONS,
@@ -324,7 +316,6 @@ class NetworkResource(ModelResource):
         authentication = MultiAuthentication(ApiKeyAuthentication(), BasicAuthentication(), Authentication())
         authorization = MangalAuthorization()
         always_return_data = True
-        include_resource_uri = False
         resource_name = 'network'
         filtering = {
                 'owner': ALL_WITH_RELATIONS,
@@ -357,7 +348,6 @@ class DatasetResource(ModelResource):
         authentication = MultiAuthentication(ApiKeyAuthentication(), BasicAuthentication(), Authentication())
         authorization = MangalAuthorization()
         always_return_data = True
-        include_resource_uri = False
         resource_name = 'dataset'
         filtering = {
                 'owner': ALL_WITH_RELATIONS,

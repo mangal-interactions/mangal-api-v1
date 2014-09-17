@@ -143,7 +143,11 @@ class Interaction(models.Model):
    units_f = models.CharField(max_length=50,blank=True,null=True, help_text = "Units in which the interaction strength is measured")
    units_t = models.CharField(max_length=50,blank=True,null=True, help_text = "Units in which the interaction strength is measured")
    description = models.CharField(max_length=D_NAME,blank=True,null=True, help_text = "A description of the interaction")
-   environment = models.ManyToManyField(Environment,blank=True,null=True)
+   latitude = models.CharField(max_length=20,blank=True,null=True, help_text = "Latitude")
+   longitude = models.CharField(max_length=20,blank=True,null=True, help_text = "Longitude")
+   environment = models.ManyToManyField(Environment,blank=True,null=True, help_text = "Local environment")
+   papers = models.ManyToManyField(Ref, related_name='papers',blank=True,null=True)
+   data = models.ManyToManyField(Ref, related_name='data',blank=True,null=True)
    def __unicode__(self):
        From = self.taxa_from
        To = self.taxa_to
