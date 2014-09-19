@@ -63,19 +63,10 @@ class Taxa(models.Model):
            na += " ("+self.vernacular+")"
        return na
 
-# population
-class Population(models.Model):
-   taxa = models.ForeignKey(Taxa)
-   name = models.CharField(max_length=M_NAME, help_text = "A name allowing to identify the population")
-   owner = models.ForeignKey(User, related_name="%(app_label)s_%(class)s_owner", help_text = "The identifier of the uploader")
-   description = models.CharField(max_length=D_NAME,blank=True,null=True, help_text = "A short description of the population")
-   def __unicode__(self):
-       return u'%s, of taxa %s' % (self.name, self.taxa)
-
 # item
 class Item(models.Model):
    owner = models.ForeignKey(User, related_name="%(app_label)s_%(class)s_owner", help_text = "The identifier of the uploader")
-   population = models.ForeignKey(Population)
+   taxa = models.ForeignKey(Taxa)
    level = models.CharField(max_length=50, choices = (('individual', 'Individual'), ('population', 'Population'),), help_text = "Whether the item is a single individual, or a population")
    name = models.CharField(max_length=M_NAME, help_text = "A name for the item, useful to identify it later")
    traits = models.ManyToManyField(Trait,blank=True,null=True)
@@ -83,7 +74,7 @@ class Item(models.Model):
    units = models.CharField(max_length=50,blank=True,null=True, help_text = "Units in which the population size is measured")
    description = models.CharField(max_length=D_NAME,blank=True,null=True, help_text = "A short description of the population")
    def __unicode__(self):
-       return u'%s (%s) - belongs to %s' % (self.name, self.level, self.population)
+       return u'%s (%s) - belongs to %s' % (self.name, self.level, self.taxa)
 
 # reference
 class Ref(models.Model):
@@ -140,8 +131,6 @@ class Interaction(models.Model):
    owner = models.ForeignKey(User, related_name="%(app_label)s_%(class)s_owner")
    taxa_from = models.ForeignKey(Taxa, related_name='taxa_from')
    taxa_to = models.ForeignKey(Taxa, related_name='taxa_to')
-   pop_from = models.ForeignKey(Population, related_name='pop_from', blank=True, null=True)
-   pop_to = models.ForeignKey(Population, related_name='pop_to', blank=True, null=True)
    item_from = models.ForeignKey(Item, related_name='item_from', blank=True, null=True)
    item_to = models.ForeignKey(Item, related_name='item_to', blank=True, null=True)
    stage_from = models.CharField(max_length=50, choices = STAGE_CHOICES, default = 'all', help_text = "The stage of the establishing, to be selected in the list of allowed values")
@@ -160,10 +149,6 @@ class Interaction(models.Model):
    def __unicode__(self):
        From = self.taxa_from
        To = self.taxa_to
-       if self.pop_from :
-          From = self.pop_from
-       if self.pop_to:
-          To = self.pop_to
        if self.item_from :
           From = self.item_from
        if self.item_to:

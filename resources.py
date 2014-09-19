@@ -189,36 +189,12 @@ class TaxaResource(ModelResource):
                 }
         allowed_methods = ['get','post','patch']
 
-
-class PopulationResource(ModelResource):
-    owner = fields.ForeignKey(UserResource, 'owner', full=True)
-    taxa = fields.ForeignKey(TaxaResource, 'taxa', full=True, help_text = "The identifier (or URI) of the taxa object to which the population belongs.")
-    def dehydrate(self, bundle):
-        bundle.data['taxa'] = str(bundle.obj.taxa_id)
-        bundle.data['id'] = str(bundle.data['id'])
-        bundle.data['owner'] = str(bundle.data['owner'].data['username'])
-        return bundle
-    class Meta:
-        authentication = MultiAuthentication(ApiKeyAuthentication(), BasicAuthentication(), Authentication())
-        authorization = MangalAuthorization()
-        always_return_data = True
-        queryset = Population.objects.all()
-        filtering = {
-                'taxa': ALL_WITH_RELATIONS,
-                'name': ALL,
-                'description': ALL,
-                'owner': ALL_WITH_RELATIONS,
-                }
-        resource_name = 'population'
-        allowed_methods = ['get','post','patch']
-
-
 class ItemResource(ModelResource):
-    population = fields.ForeignKey(PopulationResource, 'population', full=True, help_text = "The identifier (or URI) of the population object to which the item belongs.")
+    taxa = fields.ForeignKey(TaxaResource, 'taxa', full=True, help_text = "The identifier (or URI) of the taxa object to which the item belongs.")
     owner = fields.ForeignKey(UserResource, 'owner', full=True)
     traits = fields.ManyToManyField(TraitResource, 'traits', full=True, blank = True, null = True, help_text = "A list of traits values indentifiers (or URIs) that were measured on this item.")
     def dehydrate(self, bundle):
-        bundle.data['population'] = str(bundle.obj.population_id)
+        bundle.data['taxa'] = str(bundle.obj.taxa_id)
         bundle.data['id'] = str(bundle.data['id'])
         bundle.data['owner'] = str(bundle.data['owner'].data['username'])
         bundle.data['traits'] = [str(tr.data['id']) for tr in bundle.data['traits']]
@@ -237,7 +213,7 @@ class ItemResource(ModelResource):
         always_return_data = True
         queryset = Item.objects.all()
         filtering = {
-                'population': ALL_WITH_RELATIONS,
+                'taxa': ALL_WITH_RELATIONS,
                 'description': ALL,
                 'owner': ALL_WITH_RELATIONS,
                 'stage': ALL,
@@ -252,10 +228,10 @@ class InteractionResource(ModelResource):
     environment = fields.ManyToManyField(EnvironmentResource, 'environment', full=True, help_text = "List of identifiers (or URIs) of the environments associated to the interaction.", null=True, blank=True)
     taxa_from = fields.ForeignKey(TaxaResource, 'taxa_from', full=True, help_text = "Identifier (or URI) of the taxa establishing the interaction.")
     taxa_to = fields.ForeignKey(TaxaResource, 'taxa_to', full=True, help_text = "Identifier (or URI) of the taxa receiving the interaction.")
-    pop_from = fields.ForeignKey(PopulationResource, 'pop_from', full=True, null = True, help_text = "Identifier (or URI) of the pop. establishing the interaction.")
-    pop_to = fields.ForeignKey(PopulationResource, 'pop_to', full=True, null = True, help_text = "Identifier (or URI) of the pop. receiving the interaction.")
     item_from = fields.ForeignKey(ItemResource, 'item_from', full=True, null = True, blank = True, help_text = "Identifier (or URI) of the item establishing the interaction.")
     item_to = fields.ForeignKey(ItemResource, 'item_to', full=True, null = True, blank = True, help_text = "Identifier (or URI) of the item receiving the interaction.")
+    data = fields.ManyToManyField(RefResource, 'data', full=True, null=True, blank=True, help_text = "List of identifiers (or URIs) of the references describing the data.")
+    papers = fields.ManyToManyField(RefResource, 'papers', full=True, null=True, blank=True, help_text = "List of identifiers (or URIs) of the references to the papers associated with the dataset.")
     def build_schema(self):
         base_schema = super(InteractionResource, self).build_schema()
         for f in self._meta.object_class._meta.fields:
@@ -265,15 +241,13 @@ class InteractionResource(ModelResource):
                     })
         return base_schema
     def dehydrate(self, bundle):
+        bundle.data['data'] = [str(ref.data['id']) for ref in bundle.data['data']]
+        bundle.data['papers'] = [str(ref.data['id']) for ref in bundle.data['papers']]
         bundle.data['id'] = str(bundle.data['id'])
         bundle.data['owner'] = str(bundle.data['owner'].data['username'])
         bundle.data['taxa_from'] = str(bundle.data['taxa_from'].obj.id)
         bundle.data['environment'] = [str(env.data['id']) for env in bundle.data['environment']]
         bundle.data['taxa_to'] = str(bundle.data['taxa_to'].obj.id)
-        if bundle.data['pop_from']:
-            bundle.data['pop_from'] = str(bundle.data['pop_from'].obj.id)
-        if bundle.data['pop_to']:
-            bundle.data['pop_to'] = str(bundle.data['pop_to'].obj.id)
         if bundle.data['item_from']:
             bundle.data['item_from'] = str(bundle.data['item_from'].obj.id)
         if bundle.data['item_to']:
@@ -288,8 +262,6 @@ class InteractionResource(ModelResource):
                 'owner': ALL_WITH_RELATIONS,
                 'taxa_from': ALL_WITH_RELATIONS,
                 'taxa_to': ALL_WITH_RELATIONS,
-                'pop_to': ALL_WITH_RELATIONS,
-                'pop_from': ALL_WITH_RELATIONS,
                 'item_to': ALL_WITH_RELATIONS,
                 'item_from': ALL_WITH_RELATIONS,
                 'link_type': ALL_WITH_RELATIONS,
@@ -304,12 +276,16 @@ class InteractionResource(ModelResource):
 class NetworkResource(ModelResource):
     interactions = fields.ManyToManyField(InteractionResource, 'interactions', full=True, help_text = "List of identifiers (or URIs) of the interactions in the network.")
     environment = fields.ManyToManyField(EnvironmentResource, 'environment', full=True, null=True, blank=True, help_text = "List of identifiers (or URIs) of environmental measurements associated to the network.")
+    data = fields.ManyToManyField(RefResource, 'data', full=True, null=True, blank=True, help_text = "List of identifiers (or URIs) of the references describing the data.")
+    papers = fields.ManyToManyField(RefResource, 'papers', full=True, null=True, blank=True, help_text = "List of identifiers (or URIs) of the references to the papers associated with the dataset.")
     owner = fields.ForeignKey(UserResource, 'owner', full=True)
     def dehydrate(self, bundle):
         bundle.data['id'] = str(bundle.data['id'])
         bundle.data['interactions'] = [str(inte.data['id']) for inte in bundle.data['interactions']]
         bundle.data['environment'] = [str(env.data['id']) for env in bundle.data['environment']]
         bundle.data['owner'] = str(bundle.data['owner'].data['username'])
+        bundle.data['data'] = [str(ref.data['id']) for ref in bundle.data['data']]
+        bundle.data['papers'] = [str(ref.data['id']) for ref in bundle.data['papers']]
         return bundle
     class Meta:
         queryset = Network.objects.all()

@@ -2,7 +2,6 @@ from django.contrib import admin
 from models import *
 
 admin.site.register(Taxa)
-admin.site.register(Population)
 admin.site.register(Item)
 admin.site.register(Trait)
 admin.site.register(Environment)

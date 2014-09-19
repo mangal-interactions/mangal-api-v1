@@ -10,7 +10,6 @@ from api import *
 v1_api = Api(api_name='v1')
 v1_api.register(UserResource())
 v1_api.register(TaxaResource())
-v1_api.register(PopulationResource())
 v1_api.register(InteractionResource())
 v1_api.register(NetworkResource())
 v1_api.register(DatasetResource())
